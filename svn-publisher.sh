@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ##### Functions
-
 <<FUNCTION_GET_LOCAL_REPO_URL
     Get the local repos remote url. Used to fetch the branches
     @returns {string}, remote repo
@@ -30,9 +29,30 @@ merge_branch() {
   echo "$(svn merge $1/branches/$2)"
 }
 
-##### Main Script
+<<FUNCTION_COMMIT_BRANCH
+    Commit the merge using the target branches logs
+    @param {string} $1, source branch url
+    @param {string} $2, target branch name
+FUNCTION_COMMIT_BRANCH
+commit_branch() {
+  # TODO: make the commit/messages configurable
+  svn commit -m "$(get_branch_logs $1 $2)"
+}
 
-# TODO: make url configurable
+<<FUNCTION_CLEAN_LOCAL
+    Run svn clean up methods once the merging is finished
+FUNCTION_CLEAN_LOCAL
+clean_local() {
+  svn cleanup
+  svn update
+}
+
+##### Main Script
 REPO_BASE_URL="$(get_local_repo_url)"
-merge_branch $REPO_BASE_URL $1
-svn commit -m "$(get_branch_logs $REPO_BASE_URL $1)"
+# Merge and commit branches from args
+for branch_name in "$@"
+do
+  merge_branch $REPO_BASE_URL $branch_name
+  commit_branch $REPO_BASE_URL $branch_name
+  clean_local
+done
