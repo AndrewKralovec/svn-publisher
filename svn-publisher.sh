@@ -20,12 +20,12 @@ get_branch_logs() {
   echo "$(svn log --stop-on-copy $1/branches/$2)"
 }
 
-<<FUNCTION_GET_BRANCH_LOGS
+<<FUNCTION_MERGE_BRANCH
     Merge the target branch to the source branch
     @param {string} $1, source branch url
     @param {string} $2, target branch name
     @returns {string}, merge result
-FUNCTION_GET_BRANCH_LOGS
+FUNCTION_MERGE_BRANCH
 merge_branch() {
   echo "$(svn merge $1/branches/$2)"
 }
