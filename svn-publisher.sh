@@ -3,7 +3,7 @@
 ##### Arguments
 <<MAIN_ARGUMENTS
   Parse arguments a
-  Set script flags (BRANCH_LIST, REPO_BASE_URL)
+  Set script flags (BRANCH_LIST, REMOTE_BASE_URL)
   @param {string}, number of arguments
 MAIN_ARGUMENTS
 while test $# -gt 0; do
@@ -15,8 +15,10 @@ while test $# -gt 0; do
       echo " "
       echo "options:"
       echo "-h, --help                show brief help"
-      echo "-b, --branches            specify what branches to merge"
-      echo "-r, --repo                specify the remote repo url for the project"
+      echo "-b, --branches [branches] specify what branches to merge"
+      echo "-r, --remote [url]        specify the remote repo url for the project"
+      echo "-p, --path [dir]          specify the source repo"
+      # echo "-c, --copy [repo]         copy remote repo for merging"
       exit 0
       ;;
     -b|--branches)
@@ -29,7 +31,14 @@ while test $# -gt 0; do
     -r|--repo)
       shift
       if test $# -gt 0; then
-        export REPO_BASE_URL=$1
+        export REMOTE_BASE_URL=$1
+      fi
+      shift
+      ;;
+    -p|--path)
+      shift
+      if test $# -gt 0; then
+        export REPO_LOCAL_PATH=$1
       fi
       shift
       ;;
@@ -46,10 +55,10 @@ done
   @returns {string}, remote repo
 FUNCTION_GET_REMOTE_URL
 get_remote_url() {
-  if [[ -z "$REPO_BASE_URL" ]]; then
+  if [[ -z "$REMOTE_BASE_URL" ]]; then
     echo "$(svn info | grep 'Repository Root' | awk '{print $NF}')"
   else
-    echo "$REPO_BASE_URL"
+    echo "$REMOTE_BASE_URL"
   fi
 }
 
@@ -91,6 +100,17 @@ clean_local() {
   svn update
 }
 
+<<FUNCTION_PUSH_BRANCH
+  Merge branch into source. Then commit changes from target and clean up the local sourc repo
+  @param {string} $1, source branch url
+  @param {string} $2, target branch name
+FUNCTION_PUSH_BRANCH
+push_branch() {
+  merge_branch $1 $2
+  commit_branch $1 $2
+  clean_local
+}
+
 ##### Main Script
 
 # TODO: Handle this in the argument parser
@@ -102,10 +122,13 @@ if [[ -z "$BRANCH_LIST" ]]; then
   exit 1
 fi
 
+# NOTE: Svn requires to be in the working dir to execute.
+if [[ ! -z "$REPO_LOCAL_PATH" ]]; then
+  cd "$REPO_LOCAL_PATH";
+fi
+
 repo_source_url="$(get_remote_url)"
 for target_name in ${BRANCH_LIST[@]};
 do
-  merge_branch $repo_source_url $target_name
-  commit_branch $repo_source_url $target_name
-  clean_local
+  push_branch $repo_source_url $target_name
 done
