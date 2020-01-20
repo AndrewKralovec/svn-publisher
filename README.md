@@ -5,5 +5,5 @@ SVN merging and publishing script
 ## Usage
 
 ```sh
-sh svn-publisher.sh branch_1 branch_2
+sh svn-publisher.sh -b "branch_1 branch_2"
 ```
