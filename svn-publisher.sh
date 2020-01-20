@@ -64,7 +64,7 @@ get_remote_url() {
 
 <<FUNCTION_GET_BRANCH_LOGS
   Get the to target branch message logs, since branch was created
-  @param {string} $1, source branch url
+  @param {string} $1, remote url
   @param {string} $2, target branch name
   @returns {string}, list of commit messages from target branch
 FUNCTION_GET_BRANCH_LOGS
@@ -74,7 +74,7 @@ get_branch_logs() {
 
 <<FUNCTION_MERGE_BRANCH
   Merge the target branch to the source branch
-  @param {string} $1, source branch url
+  @param {string} $1, remote url
   @param {string} $2, target branch name
   @returns {string}, merge result
 FUNCTION_MERGE_BRANCH
@@ -84,7 +84,7 @@ merge_branch() {
 
 <<FUNCTION_COMMIT_BRANCH
   Commit the merge using the target branches logs
-  @param {string} $1, source branch url
+  @param {string} $1, remote url
   @param {string} $2, target branch name
 FUNCTION_COMMIT_BRANCH
 commit_branch() {
@@ -102,7 +102,7 @@ clean_local() {
 
 <<FUNCTION_PUSH_BRANCH
   Merge branch into source. Then commit changes from target and clean up the local sourc repo
-  @param {string} $1, source branch url
+  @param {string} $1, remote url
   @param {string} $2, target branch name
 FUNCTION_PUSH_BRANCH
 push_branch() {
