@@ -69,6 +69,7 @@ get_remote_url() {
   @returns {string}, list of commit messages from target branch
 FUNCTION_GET_BRANCH_LOGS
 get_branch_logs() {
+  # Combac: Use this format instead svn log --stop-on-copy --xml | sed -n 's:.*<msg>\(.*\)</msg>.*:\1:p'
   echo "$(svn log --stop-on-copy $1/branches/$2)"
 }
 
